@@ -244,6 +244,17 @@ export const MODULES: ModuleMeta[] = [
     actionTargets: {"发布模板": "已发布", "标记异常": "格式异常", "停用模板": "已停用"},
     metrics: ["模板总数", "已发布模板", "格式异常数"],
   },
+  {
+    key: "correction_batch",
+    name: "样本更正批次",
+    entity: "更正批次",
+    desc: "值班员一次纠正多个地区的对照和实验观测，样本核算逐条关联地区、分组和证明材料，批量重算受影响指标并发布替代结论。",
+    fields: ["批次编号", "回执号", "值班员", "更正条目数", "已核清", "待补证", "已拒绝", "受影响指标", "提交时间"],
+    statuses: ["待核算", "已核算", "已重算", "已发布"],
+    actions: ["样本核算", "批量重算", "发布结论"],
+    actionTargets: {"样本核算": "已核算", "批量重算": "已重算", "发布结论": "已发布"},
+    metrics: ["批次总数", "已核算批次", "已发布批次"],
+  },
 ]
 
 export const MODULE_BY_KEY: Map<string, ModuleMeta> = new Map(

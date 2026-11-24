@@ -72,6 +72,7 @@ npm run dev
 | 漏斗分析 | `funnel_def` | 漏斗方案 | 方案编号、步骤序列、转化窗口 |
 | 数据集关联 | `dataset_join` | 关联方案 | 方案编号、主数据集、关联数据集 |
 | 报告生成 | `report_builder` | 报告模板 | 模板编号、报告名称、引用指标 |
+| 样本更正批次 | `correction_batch` | 更正批次 | 批次编号、回执号、值班员、受影响指标 |
 
 ## 约定
 
@@ -80,6 +81,22 @@ npm run dev
   `frontend/src/domain/<模块>.ts`，用于承载真实业务差异并维持36题位容量。
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
+
+### 样本更正批次专用接口
+
+`correction_batch` 在通用资源路由之外提供成组纠错流程接口
+（`app/routers/correction.py`，注册在通用路由之前）：
+
+| 接口 | 说明 |
+| --- | --- |
+| `POST /api/correction_batch/submit` | 值班员一次提交多地区更正条目；同一回执号只受理一次 |
+| `POST /api/correction_batch/{id}/verify` | 样本核算：逐条关联地区、分组、证明材料，得出已核清/待补证/已拒绝 |
+| `POST /api/correction_batch/{id}/recalculate` | 批量重算受影响指标（待补证不进入，未受影响沿用原统计），生成替代结论 |
+| `GET /api/correction_batch/{id}/entries` | 核算明细：查实均值与拒绝记录 |
+| `GET /api/correction_batch/{id}/conclusions` | 替代结论：旧报告号、采用口径与用于复算的原观测 |
+| `GET /api/correction_batch/publish-list` | 运营发布清单：每条结论今天是否可替换及原因 |
+| `POST /api/correction_batch/{id}/publish` | 发布替代结论；同一回执并发提交只能发布一次 |
+| `POST /api/correction_batch/entries/{id}/proof` | 补录证明材料，补证后可重新核算 |
 
 领域：数据工程
 子方向：数据分析与数据应用
